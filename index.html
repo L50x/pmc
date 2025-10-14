@@ -15,7 +15,7 @@
 <h2>Profit Margin Calculator</h2>
 
 <label>Wholesale Cost ($):
-  <input type="number" id="cost" step="0.01" min="0" value="1000">
+  <input type="number" id="cost" step="1" min="0" value="1250">
   <select id="costUnit">
     <option value="g">per g</option>
     <option value="2g">per 2g</option>
@@ -25,13 +25,13 @@
 
 <label>Bucket Size:
   <select id="size">
-    <option value="1">1g</option>
-    <option value="2" selected>2g</option>
+    <option value="1" selected>1g</option>
+    <option value="2">2g</option>
   </select>
 </label>
 
 <label>Retail Price ($ for bucket):
-  <input type="number" id="retail" step="0.01" min="0" value="50">
+  <input type="number" id="retail" step="1" min="0" value="65">
 </label>
 
 <div class="result" id="result"></div>
