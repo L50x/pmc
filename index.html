@@ -27,10 +27,12 @@
   <select id="size">
     <option value="1" selected>1g</option>
     <option value="2">2g</option>
+    <option value="3.5">3.5g</option>
+    <option value="7">7g</option>
   </select>
 </label>
 
-<label>Retail Price ($ for bucket):
+<label id="retailLabel">Retail Price per <span id="bucketSizeLabel">1</span>g Bucket ($):
   <input type="number" id="retail" step="1" min="0" value="65">
 </label>
 
@@ -42,6 +44,7 @@ const costUnit = document.getElementById('costUnit');
 const sizeSelect = document.getElementById('size');
 const retailInput = document.getElementById('retail');
 const resultDiv = document.getElementById('result');
+const bucketSizeLabel = document.getElementById('bucketSizeLabel');
 
 const inputs = [costInput, costUnit, sizeSelect, retailInput];
 
@@ -53,7 +56,6 @@ function toPerGram(value, unit) {
 }
 
 function getTotalUnits(unitSize) {
-  // Determine number of grams in wholesale unit
   let grams;
   const costUnitValue = costUnit.value;
   if (costUnitValue === 'g') grams = 1;
@@ -73,15 +75,17 @@ function updateProfit() {
   const profitPerBucket = retailPerBucket - costPerBucket;
   const marginPercent = (profitPerBucket / retailPerBucket) * 100;
 
-  // total profit if all wholesale sold
   const totalBuckets = getTotalUnits(bucketSize);
   const totalProfit = profitPerBucket * totalBuckets;
+
+  // Update label dynamically
+  bucketSizeLabel.textContent = bucketSize;
 
   resultDiv.innerHTML = `
     Cost per g: $${costPerGram.toFixed(2)}<br>
     Profit per ${bucketSize}g: $${profitPerBucket.toFixed(2)}<br>
-    Total Profit (all wholesale sold): $${totalProfit.toFixed(2)}<br>
-    Profit Margin: ${marginPercent.toFixed(2)}%
+    Profit Margin: ${marginPercent.toFixed(2)}%<br>
+    Total Profit: $${totalProfit.toFixed(2)}
   `;
 }
 
