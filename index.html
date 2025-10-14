@@ -52,20 +52,35 @@ function toPerGram(value, unit) {
   return value;
 }
 
+function getTotalUnits(unitSize) {
+  // Determine number of grams in wholesale unit
+  let grams;
+  const costUnitValue = costUnit.value;
+  if (costUnitValue === 'g') grams = 1;
+  else if (costUnitValue === '2g') grams = 2;
+  else if (costUnitValue === 'oz') grams = 28;
+  else grams = 1;
+
+  return grams / unitSize; // number of buckets
+}
+
 function updateProfit() {
   const costPerGram = toPerGram(parseFloat(costInput.value), costUnit.value);
-  const size = parseFloat(sizeSelect.value);
-  const retailTotal = parseFloat(retailInput.value);
+  const bucketSize = parseFloat(sizeSelect.value);
+  const retailPerBucket = parseFloat(retailInput.value);
 
-  const costTotal = costPerGram * size;
-  const profitTotal = retailTotal - costTotal;
-  const profitPerGram = profitTotal / size;
-  const marginPercent = (profitTotal / retailTotal) * 100;
+  const costPerBucket = costPerGram * bucketSize;
+  const profitPerBucket = retailPerBucket - costPerBucket;
+  const marginPercent = (profitPerBucket / retailPerBucket) * 100;
+
+  // total profit if all wholesale sold
+  const totalBuckets = getTotalUnits(bucketSize);
+  const totalProfit = profitPerBucket * totalBuckets;
 
   resultDiv.innerHTML = `
     Cost per g: $${costPerGram.toFixed(2)}<br>
-    Profit per g: $${profitPerGram.toFixed(2)}<br>
-    Total Profit: $${profitTotal.toFixed(2)}<br>
+    Profit per ${bucketSize}g: $${profitPerBucket.toFixed(2)}<br>
+    Total Profit (all wholesale sold): $${totalProfit.toFixed(2)}<br>
     Profit Margin: ${marginPercent.toFixed(2)}%
   `;
 }
