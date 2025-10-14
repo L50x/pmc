@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Profit Margin Calculator</title>
+<link rel="icon" type="image/x-icon" href="https://icons.duckduckgo.com/ip2/www.thecalculatorsite.com.ico">
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+  label { display: block; margin-top: 10px; }
+  input, select { margin-top: 5px; padding: 5px; width: 150px; }
+  .result { margin-top: 20px; font-weight: bold; }
+</style>
+</head>
+<body>
+<h2>Profit Margin Calculator</h2>
+
+<label>Wholesale Cost ($):
+  <input type="number" id="cost" step="0.01" min="0" value="1000">
+  <select id="costUnit">
+    <option value="g">per g</option>
+    <option value="2g">per 2g</option>
+    <option value="oz" selected>per oz</option>
+  </select>
+</label>
+
+<label>Bucket Size:
+  <select id="size">
+    <option value="1">1g</option>
+    <option value="2" selected>2g</option>
+  </select>
+</label>
+
+<label>Retail Price ($ for bucket):
+  <input type="number" id="retail" step="0.01" min="0" value="50">
+</label>
+
+<div class="result" id="result"></div>
+
+<script>
+const costInput = document.getElementById('cost');
+const costUnit = document.getElementById('costUnit');
+const sizeSelect = document.getElementById('size');
+const retailInput = document.getElementById('retail');
+const resultDiv = document.getElementById('result');
+
+const inputs = [costInput, costUnit, sizeSelect, retailInput];
+
+function toPerGram(value, unit) {
+  if (unit === 'g') return value;
+  if (unit === '2g') return value / 2;
+  if (unit === 'oz') return value / 28;
+  return value;
+}
+
+function updateProfit() {
+  const costPerGram = toPerGram(parseFloat(costInput.value), costUnit.value);
+  const size = parseFloat(sizeSelect.value);
+  const retailTotal = parseFloat(retailInput.value);
+
+  const costTotal = costPerGram * size;
+  const profitTotal = retailTotal - costTotal;
+  const profitPerGram = profitTotal / size;
+  const marginPercent = (profitTotal / retailTotal) * 100;
+
+  resultDiv.innerHTML = `
+    Cost per g: $${costPerGram.toFixed(2)}<br>
+    Profit per g: $${profitPerGram.toFixed(2)}<br>
+    Total Profit: $${profitTotal.toFixed(2)}<br>
+    Profit Margin: ${marginPercent.toFixed(2)}%
+  `;
+}
+
+// Live update
+inputs.forEach(input => input.addEventListener('input', updateProfit));
+updateProfit();
+</script>
+</body>
+</html>
