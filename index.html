@@ -48,29 +48,39 @@ const bucketSizeLabel = document.getElementById('bucketSizeLabel');
 
 const inputs = [costInput, costUnit, sizeSelect, retailInput];
 
+// Convert wholesale cost input to per-gram equivalent
 function toPerGram(value, unit) {
-  if (unit === 'g') return value;
-  if (unit === '2g') return value / 2;
-  if (unit === 'oz') return value / 28;
+  if (unit === 'oz') return value / 28;   // already per oz
+  if (unit === '2g') return (value * (28 / 2)) / 28; // convert 2g -> oz -> g equivalent
+  if (unit === 'g') return (value * (28 / 1)) / 28;  // convert 1g -> oz -> g equivalent
   return value;
 }
 
+// Calculate total number of buckets from one oz
 function getTotalUnits(unitSize) {
-  let grams;
-  const costUnitValue = costUnit.value;
-  if (costUnitValue === 'g') grams = 1;
-  else if (costUnitValue === '2g') grams = 2;
-  else if (costUnitValue === 'oz') grams = 28;
-  else grams = 1;
-
-  return grams / unitSize; // number of buckets
+  const gramsPerOz = 28;
+  return gramsPerOz / unitSize;
 }
 
 function updateProfit() {
-  const costPerGram = toPerGram(parseFloat(costInput.value), costUnit.value);
+  const costValue = parseFloat(costInput.value);
+  const costUnitValue = costUnit.value;
   const bucketSize = parseFloat(sizeSelect.value);
   const retailPerBucket = parseFloat(retailInput.value);
 
+  // Adjust wholesale cost to per-oz equivalent when user enters per g or per 2g
+  let costPerOz;
+  if (costUnitValue === 'oz') {
+    costPerOz = costValue;
+  } else if (costUnitValue === '2g') {
+    costPerOz = costValue * (28 / 2);
+  } else if (costUnitValue === 'g') {
+    costPerOz = costValue * 28;
+  } else {
+    costPerOz = costValue;
+  }
+
+  const costPerGram = costPerOz / 28;
   const costPerBucket = costPerGram * bucketSize;
   const profitPerBucket = retailPerBucket - costPerBucket;
   const marginPercent = (profitPerBucket / retailPerBucket) * 100;
@@ -78,18 +88,17 @@ function updateProfit() {
   const totalBuckets = getTotalUnits(bucketSize);
   const totalProfit = profitPerBucket * totalBuckets;
 
-  // Update label dynamically
   bucketSizeLabel.textContent = bucketSize;
 
   resultDiv.innerHTML = `
+    Cost per oz (converted): $${costPerOz.toFixed(2)}<br>
     Cost per g: $${costPerGram.toFixed(2)}<br>
     Profit per ${bucketSize}g: $${profitPerBucket.toFixed(2)}<br>
     Profit Margin: ${marginPercent.toFixed(2)}%<br>
-    Total Profit: $${totalProfit.toFixed(2)}
+    Total Profit (per oz): $${totalProfit.toFixed(2)}
   `;
 }
 
-// Live update
 inputs.forEach(input => input.addEventListener('input', updateProfit));
 updateProfit();
 </script>
